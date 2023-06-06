@@ -10,7 +10,9 @@ def empirical_mean(X):
 
 def empirical_covariance(X):
     mu = empirical_mean(X)
-    C = numpy.dot((X - mu), (X - mu).T) / X.shape[1]
+    DC = X - mu.reshape((mu.size, 1))
+    C = numpy.dot(DC, DC.T)/ float(DC.shape[1])
+
     return C
 
 def empirical_withinclass_cov(D, labels):
@@ -71,6 +73,8 @@ def PCA_red(D, m):
 def LDA(D, L, m):
     SW = empirical_withinclass_cov(D, L)
     SB = empirical_betweenclass_cov(D, L)
+    print("the within: ", SW)
+    print("the between: ", SB)
     s, U = scipy.linalg.eigh(SB, SW)
     W = U[:, ::-1][:, 0:m]
     return numpy.dot(W.T, D), W
@@ -81,7 +85,7 @@ def plot_scatter(D, L):
     D1 = D[:, L == 1]
     D2 = D[:, L == 2]
 
-    LL, _W = LDA(D, L, 7)
+    LL, _W = LDA(D, L, 10)
     L0 = LL[:, L == 0]
     L1 = LL[:, L == 1]
     L2 = LL[:, L == 2]
